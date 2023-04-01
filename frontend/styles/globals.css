@@ -86,8 +86,6 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
-  background-color: white;
-  color: white;
 }
 
 body {
@@ -109,15 +107,4 @@ a {
   html {
     color-scheme: dark;
   }
-}
-
-.text-gradient {
-  background: linear-gradient(92.95deg, #127FE4 29.15%, #00E0FF 84.2%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-fill-color: transparent;
-}
-.brand-gradient {
-  background: linear-gradient(93.28deg, #127FE4 3.16%, #00E0FF 100.79%, #00E0FF 100.79%);
 }
