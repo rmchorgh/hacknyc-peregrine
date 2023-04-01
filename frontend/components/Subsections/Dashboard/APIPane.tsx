@@ -36,15 +36,6 @@ function APIPane() {
     return () => unsubscribe();
   }, []);
 
-  // const addAPI = () => {
-  //   const api: API = {
-  //     name: "",
-  //     key: "",
-  //   };
-  //   setAPIs([...apis, api]);
-  //   const apiRef = collection(db, "users", auth.currentUser?.uid!, "apis");
-  //   setDoc(doc(apiRef), api).then(() => alert("API added"));
-  // }
 
   const handleAPIPress = (apipressed: string) => {
     const currentAPI = apis.filter((api) => api.name == apipressed)[0];
