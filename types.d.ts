@@ -9,6 +9,13 @@ export interface User {
     period: Period
 }
 
-export interface Template {
+export enum TemplateType {
+    rawText = 0,
+    generatedText = 1,
+    generatedGraph = 2
+}
 
+export interface Template {
+    type: TemplateType,
+    params?: string[]
 }
