@@ -11,7 +11,7 @@ function BrandButton({ text, onClick, className }: BrandButtonProps) {
       onClick={onClick}
       className={
         `brand-gradient px-5 cursor-pointer drop-shadow-md opacity-90 hover:outline hover:outline-blue-300
-         py-4 text-white rounded-full hover:opacity-100 transition-all` +
+         py-4 text-white rounded-full hover:opacity-100 transition-all text-center` +
         " " +
         className
       }

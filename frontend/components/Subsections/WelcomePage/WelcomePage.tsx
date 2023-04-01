@@ -12,9 +12,9 @@ function WelcomePage() {
   const router = useRouter();
 
   return (
-    <>
+    <div className="h-screen w-screen overflow-hidden fixed top-0 left-0">
       <Layout>
-        <div className="flex relative flex-col gap-4 items-center pt-44 min-h-screen">
+        <div className="flex relative flex-col gap-4 items-center pt-44 w-full h-full">
           <div className="text-7xl font-medium text-center">
             <span className="text-gradient">AI Zapier</span> <br />
             for newsletters
@@ -37,7 +37,7 @@ function WelcomePage() {
           pointer-events-none w-screen h-full"
         />
       </div>
-    </>
+    </div>
   );
 }
 

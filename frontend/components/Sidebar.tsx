@@ -17,7 +17,7 @@ function Sidebar() {
   return (
     <>
       <div
-        className="w-[20vw] translate-x-[-18vw] hover:translate-x-[1vw] top-[10vh] left-0 absolute drop-shadow-xl rounded-md transition-all
+        className="w-[20vw] translate-x-[-18vw] hover:translate-x-[1vw] top-[10vh] left-0 fixed drop-shadow-xl rounded-md transition-all
      bg-white h-[70vh] self-center justify-center border border-[#6666662a] duration-700"
       >
         <div className="w-full h-full relative">
