@@ -144,7 +144,6 @@ function Content({ activePlaygroundId }: ContentProps) {
       <div className="text-black font-inter font-light mb-10 ">
         <div>Playground</div>
       </div>
-      {JSON.stringify(fields)}
       <div className="flex flex-col gap-4">
         <FormField
           label={"Email Subject"}
