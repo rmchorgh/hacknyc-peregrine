@@ -17,7 +17,7 @@ function FormField({ label, errorMessage, onChange, type }: FormFieldProps) {
           onChange={onChange}
           className={
             `border border-gray-300 rounded-md px-4 py-2 focus:outline-none transition-all"
-         focus:border-blue-300 bg-transparent h-[20vh]` +
+         focus:border-blue-300 bg-transparent h-[10vh]` +
             " " +
             (errorMessage ? "border-red-500" : "") +
             " "
