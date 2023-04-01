@@ -4,7 +4,7 @@
     "private": true,
     "type": "module",
     "dependencies": {
-        "@linear/sdk": "^2.6.0",
-        "openai": "^3.2.1"
+        "openai": "^3.2.1",
+        "vm2": "^3.9.14"
     }
 }
