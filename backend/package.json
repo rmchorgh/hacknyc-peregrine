@@ -4,6 +4,7 @@
     "private": true,
     "type": "module",
     "dependencies": {
+        "@linear/sdk": "^2.6.0",
         "cohere-ai": "^6.1.0"
     }
 }
