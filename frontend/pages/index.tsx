@@ -33,8 +33,9 @@ export default function Home() {
             <Dashboard />
           </ProtectedRoutes>
         ) : (
-          <WelcomePage />
-          
+          <div className={"h-screen overflow-hidden w-screen"}>
+            <WelcomePage />
+          </div>
         )}
       </div>
     </>
