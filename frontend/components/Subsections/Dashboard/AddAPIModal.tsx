@@ -13,9 +13,9 @@ type AddAPIModalProps = {
 function AddAPIModal({ visible, toClose, api }: AddAPIModalProps) {
   const [apiKey, setAPIKey] = useState(api.key);
 
-//   useEffect(() => {
-//     setAPIKey(apiKey)
-//   }, [visible])
+  useEffect(() => {
+    setAPIKey(api.key)
+  }, [api])
 
   const handleSave = async () => {
     if (apiKey == "") {
