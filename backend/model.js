@@ -29,7 +29,6 @@ function cut_json_prompt_at_token(json_api_result, token_count) {
     return json_api_result.split(" ").slice(0, token_count).join(" ");
 }
 
-// PROPPER SANDBOXING IN PLACE !!!
 async function generate_template_parser(api_result, variable) {
     const template_prompt = ("Complete the function so it returns " + variable + " as a string function foo(){ const data = " + cut_json_prompt_at_token(api_result, 1900) + "...};")
 
