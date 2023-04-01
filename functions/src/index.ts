@@ -1,22 +1,41 @@
 import { getFirestore } from "firebase-admin/firestore";
 import { onSchedule } from "firebase-functions/v2/scheduler";
-// // Start writing functions
-// // https://firebase.google.com/docs/functions/typescript
-//
-// export const helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
-import { Period, User } from "../../types.d";
 
-// Schedule function to run on a weekly interval.
+enum Period {
+	daily = 0,
+	weekly = 1,
+}
 
-exports.scheduleWeekly = onSchedule("every week 00:00", async (ev) => {
+interface User {
+	id: string;
+	playgrounds: Playground[];
+	period: Period;
+}
+interface Playground {
+	id: string;
+	template: Template[];
+}
+
+enum TemplateType {
+	rawText = 0,
+	generatedText = 1,
+	generatedGraph = 2,
+}
+
+interface Template {
+	type: TemplateType;
+	params?: string[];
+	key: string;
+}
+
+// Schedule function to run on a daily interval.
+
+exports.scheduledaily = onSchedule("every day 00:00", async (ev) => {
 	// get users with weekly schedule task
-	const weeklyUsers = await getUsersByPeriod(Period.weekly);
+	const dailyUsers = await getUsersByPeriod(Period.daily);
 
 	// run job on each user
-	weeklyUsers.forEach(runJob);
+	dailyUsers.forEach(runJob);
 });
 
 const runJob = (user: User) => {
