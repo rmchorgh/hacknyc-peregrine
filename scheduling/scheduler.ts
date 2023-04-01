@@ -4,7 +4,7 @@ const onSchedule = (s, r) => {
 
 let exports: any = {}
 
-import type {User, Period} from 'types.d'
+import { Period, User } from '../types.d'
 
 // Schedule function to run on a weekly interval.
 

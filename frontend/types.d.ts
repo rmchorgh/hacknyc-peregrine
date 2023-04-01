@@ -3,3 +3,8 @@ export type Field = {
     type: "text" | "linegraph" | "bargraph";
     prompt: string;
 }
+
+
+export type ProfileType = {
+    playgroundIds: string[];
+}
