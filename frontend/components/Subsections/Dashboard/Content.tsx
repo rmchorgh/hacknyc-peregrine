@@ -1,7 +1,7 @@
 import BrandButton from "@/components/BrandButton";
 import FormField from "@/components/FormField";
 import { auth, db } from "@/firebase";
-import { Field, Template } from "@/types";
+import { API, Field, Template } from "@/types";
 import { collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import React, { useEffect, useMemo, useState } from "react";
 import VariableField from "./VariableField";
@@ -13,6 +13,7 @@ type ContentProps = {
 function Content({ activePlaygroundId }: ContentProps) {
   const [activePlayground, setActivePlayground] = useState<Template>();
   const [playgrounds, setPlaygrounds] = useState<Template[]>([]);
+  const [hasAPIKeys, setHasAPIKeys] = useState(false);
   const [fields, setFields] = useState<Field[]>([
     {
       apiName: "",
@@ -130,6 +131,21 @@ function Content({ activePlaygroundId }: ContentProps) {
     });
   };
 
+  useEffect(() => {
+    const profileRef = doc(db, "users", auth.currentUser?.uid!);
+    const apisRef = collection(profileRef, "apis");
+    const unsubscribe = onSnapshot(apisRef, (snapshot) => {
+      const userAPIs: API[] = snapshot.docs.map(
+        (docSnap) => docSnap.data() as API
+      );
+      setHasAPIKeys(userAPIs.length > 1);
+    });
+    return () => unsubscribe();
+  }, []);
+
+
+
+
   if (activePlaygroundId == "" || activePlayground == undefined) {
     return (
       <div className="w-full min-h-screen p-28 text-md ">
@@ -199,8 +215,11 @@ function Content({ activePlaygroundId }: ContentProps) {
           </div>
         </div>
       </div>
-      <div className="w-[30%] ml-auto mt-10">
+      <div className={"w-[40%] ml-auto mt-10" + (hasAPIKeys ? "" : " pointer-events-none opacity-70")}>
         <BrandButton text={"Done with this BS"} onClick={handleSave} />
+        {!hasAPIKeys && (
+          <div className="text-center font-light mt-2">You need to add API keys!</div>
+        )}
       </div>
     </div>
   );

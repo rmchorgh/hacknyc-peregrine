@@ -39,7 +39,14 @@ function APIPane() {
 
   const handleAPIPress = (apipressed: string) => {
     const currentAPI = apis.filter((api) => api.name == apipressed)[0];
-    setActiveAPI(currentAPI);
+    if (currentAPI == undefined) {
+      setActiveAPI({
+        name: apipressed,
+        key: ""
+      })
+    } else {
+      setActiveAPI(currentAPI);
+    }
     setVisible(true);
   };
 
