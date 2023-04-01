@@ -1,22 +1,40 @@
 import { Configuration, OpenAIApi } from "openai";
-import { NodeVM } from 'vm2';
+import { NodeVM } from "vm2";
 
-import { api_result } from './sample_api_result.js';
+function shuffle(array) {
+  let currentIndex = array.length,
+    randomIndex;
+
+  // While there remain elements to shuffle.
+  while (currentIndex !== 0) {
+    // Pick a remaining element.
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex],
+      array[currentIndex],
+    ];
+  }
+
+  return array;
+}
 
 // VM2 configuration
 const vm = new NodeVM({
-    console: 'inherit',
-    sandbox: {},
-    require: {
-        external: true,
-        builtin: ['fs', 'path'],
-        root: './',
-        mock: {
-            fs: {
-                readFileSync: () => 'Nice try!'
-            }
-        }
-    }
+  console: "inherit",
+  sandbox: {},
+  require: {
+    external: true,
+    builtin: ["fs", "path"],
+    root: "./",
+    mock: {
+      fs: {
+        readFileSync: () => "Nice try!",
+      },
+    },
+  },
 });
 
 // OpenAI configuration
@@ -28,60 +46,61 @@ const openai = new OpenAIApi(configuration);
 
 // Limit Token usage through generation of compression code for data
 function cut_json_prompt_at_token(json_api_result, token_count) {
-    return json_api_result.split(" ").slice(0, token_count).join(" ");
+  const chars = json_api_result
+    .split(/[^a-zA-Z0-9]/)
+    .slice(0, token_count)
+    .join("_").length;
+  return json_api_result.slice(0, chars);
 }
 
 async function generate_template_parser(api_result, variable) {
-    const template_prompt = ("Complete the function so it returns " + variable + " as a string function foo(){ const data = " + cut_json_prompt_at_token(api_result, 1900) + "...};")
+  const template_prompt =
+    "Complete the function so it returns " +
+    variable +
+    " as a string:\nfunction foo(){ const data = " +
+    cut_json_prompt_at_token(JSON.stringify(shuffle(api_result)), 1500) +
+    "...];";
+  const completion = await openai.createCompletion({
+    model: "text-davinci-003",
+    prompt: template_prompt,
+    max_tokens: 2000,
+  });
 
-    const completion = await openai.createCompletion({
-        model: "text-davinci-003",
-        prompt: template_prompt,
-        max_tokens: 2000,
-    });
-
-    return "module.exports = function(){ const data = " + api_result + ";" + completion.data.choices[0].text;
+  return (
+    "module.exports = function(){ const data = " +
+    JSON.stringify(api_result) +
+    ";" +
+    completion.data.choices[0].text
+  );
 }
 
 async function module(api_result, type, variable) {
-    const prompt_parser = await generate_template_parser(api_result, variable);
+  const prompt_parser = await generate_template_parser(api_result, variable);
 
-    console.log(await prompt_parser)
+  const functionInSandbox = vm.run(prompt_parser);
+  const result = functionInSandbox();
 
-    const functionInSandbox = vm.run(prompt_parser);
-    const result = functionInSandbox();
+  var new_prompt;
+  switch (type) {
+    case "Text":
+      new_prompt =
+        "Write a section that can be pasted into an HTML email. The section should contain a text summary on " +
+        variable +
+        " with values: " +
+        cut_json_prompt_at_token(result, 1500);
+      break;
+    default:
+      throw new Error("Type is invalid");
+  }
 
-    var new_prompt;
-    switch(type) {
-      case "Text":
-        new_prompt = "Write an HTML email on " + variable + 
-          " with values: " + result.split(" ").slice(0, 3990).join(" "); // Room for improvement 
-        break;
-      case "Text":
-        new_prompt = "Write an HTML email on " + variable + 
-          " with values: " + result.split(" ").slice(0, 3990).join(" "); // Room for improvement 
-        break;
-      default:
-        throw new Error('Type is invalid');
-    } 
-    
-    console.log(new_prompt);
+  const completion = await openai.createCompletion({
+    model: "text-davinci-003",
+    prompt: new_prompt,
+    max_tokens: 2000,
+  });
 
-    const completion = await openai.createCompletion({
-        model: "text-davinci-003",
-        prompt: new_prompt,
-        max_tokens: 2500,
-    });
-
-    return completion.data.choices[0].text;
+  return completion.data.choices[0].text;
 }
 
 // Main
-(async () => {
-  const variable = "the titles";
-
-  console.log(
-    "Result: " + 
-    await module(api_result, "Text", variable)
-  );
-})();
+export default module;
