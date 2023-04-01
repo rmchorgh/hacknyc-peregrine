@@ -1,64 +1,54 @@
-import { getFirestore } from "firebase-admin/firestore";
-import { onSchedule } from "firebase-functions/v2/scheduler";
+import admin from "firebase-admin";
+import * as functions from "firebase-functions";
+import { sendEmails } from "./mail";
+import model from "./model";
+import { getLinear } from "./api";
 
-enum Period {
-	daily = 0,
-	weekly = 1,
-}
-
-interface User {
-	id: string;
-	playgrounds: Playground[];
-	period: Period;
-}
-interface Playground {
-	id: string;
-	template: Template[];
-}
-
-enum TemplateType {
-	rawText = 0,
-	generatedText = 1,
-	generatedGraph = 2,
-}
-
-interface Template {
-	type: TemplateType;
-	params?: string[];
-	key: string;
-}
+admin.initializeApp();
 
 // Schedule function to run on a daily interval.
 
-exports.scheduledaily = onSchedule("every day 00:00", async (ev) => {
-	// get users with weekly schedule task
-	const dailyUsers = await getUsersByPeriod(Period.daily);
+exports.scheduledaily = functions.pubsub
+	.schedule("every day 00:00")
+	.onRun(async (_) => {
+		// get users with weekly schedule task
+		const dailyJobs = await getUsersByPeriod();
 
-	// run job on each user
-	dailyUsers.forEach(runJob);
-});
-
-const runJob = (user: User) => {
-	// get user template
-	// run the llm on their data
-	// send email
-};
-
-const getUsersByPeriod = async (period: Period): Promise<User[]> => {
-	const db = getFirestore();
-
-	const ref = db.collection("users");
-	const q = ref.where("period", "==", period);
-
-	let collection: User[] = [];
-
-	const snap = await q.get();
-
-	snap.forEach((doc) => {
-		let d = doc.data() as User;
-		collection.push(d);
-		console.log(d);
+		// run job on each user
+		return dailyJobs.forEach(async (x) => await runJob(await x));
 	});
 
-	return collection;
+const runJob = async (pg: any[]) => {
+	console.log("running job", pg);
+	// run the llm on their data
+	const htmlContent = await model(
+		await getLinear("lin_api_IBz66o6WGRgfor7xTuHsoRDhXh44IsEZdyH9KtpK"),
+		"Text",
+		"all issues completed during cycle number 6"
+	);
+
+	console.log("got to 40", pg);
+
+	const { emailRecipients: recipients, emailSubject: subject } = pg[0];
+	console.log("got to 43", recipients, subject);
+	// send email
+	return await sendEmails(htmlContent!, recipients, subject);
+};
+
+const getUsersByPeriod = async () => {
+	const db = admin.firestore();
+	const ref = db.collection("users");
+
+	const snap = await ref.get();
+
+	return snap.docs.map(async (doc) => {
+		const pg = await doc.ref.collection("playgrounds").get();
+		console.log("got to 56");
+
+		return pg.docs.map((x) => {
+			let c = x.data();
+			console.log(c);
+			return c;
+		});
+	});
 };

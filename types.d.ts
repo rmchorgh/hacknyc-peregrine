@@ -11,6 +11,7 @@ export interface User {
 export interface Playground {
 	id: string;
 	template: Template[];
+	subject: string;
 }
 
 export enum TemplateType {
