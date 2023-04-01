@@ -4,6 +4,7 @@
     "private": true,
     "type": "module",
     "dependencies": {
-        "cohere-ai": "^6.1.0"
+        "openai": "^3.2.1",
+        "vm2": "^3.9.14"
     }
 }
