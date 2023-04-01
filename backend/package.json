@@ -1,0 +1,9 @@
+{
+    "name": "hacknyc-peregrine-backend",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "dependencies": {
+        "cohere-ai": "^6.1.0"
+    }
+}
